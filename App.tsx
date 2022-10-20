@@ -1,11 +1,11 @@
-import { Camera } from 'expo-camera';
-import { useState, Fragment } from 'react';
+
 import { Button, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
+import { Camera } from 'expo-camera';
+import Record from './views/Record';
+
 
 export default function App() {
   const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [camera, setCamera] = useState(null);
-  const [record, setRecord] = useState(null);
 
   if (!permission) {
     // Camera permissions are still loading
@@ -22,28 +22,13 @@ export default function App() {
     );
   }
 
-  async function startRecording():Promise<void> {
-    if(camera){
-      const data = await camera.recordAsync()
-      setRecord(data.uri);
-      console.log(data.uri);
-    }
-  }
-
-  function stopRecording():void {
-    camera.stopRecording();
-  }
+  const getTapeId = ():string => {
+    return '123';
+  };
 
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} ref={ref => setCamera(ref)}>
-        <View style={styles.cameraPlaceholder} />
-        <View style={styles.buttonContainer}>
-          <TouchableHighlight style={styles.button} onPressIn={startRecording} onPressOut={stopRecording}>
-            <Fragment />
-          </TouchableHighlight>
-        </View>
-      </Camera>
+      <Record tapeId={getTapeId()} />
     </View>
   );
 }
@@ -53,32 +38,5 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexGrow: 1,
     justifyContent: 'center',
-  },
-  camera: {
-    display: 'flex',
-    flexGrow: 1,
-  },
-  cameraPlaceholder: {
-    flexGrow: 1,
-  },
-  buttonContainer: {
-    display: 'flex',
-    flexShrink: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    backgroundColor: 'blue',
-    padding: 32,
-  },
-  button: {
-    alignSelf: 'flex-end',
-    width: 60,
-    height: 60,
-    backgroundColor: 'red',
-    borderRadius: 100,
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
   },
 });
