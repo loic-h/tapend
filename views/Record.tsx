@@ -4,27 +4,12 @@ import { View, TouchableHighlight, StyleSheet, Text, Image } from 'react-native'
 import { Camera } from 'expo-camera';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { Tape, Record, RootStackParamList } from '../types';
 
-type Tape = {
-  id: string;
-  // added: string;
-  // modified: string;
-  // order: string;
-  // name: string;
-  records: Record[];
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'Record'>
 
-type Record = {
-  videoUri: string;
-  thumbUri: string;
-  // tapeId: string;
-}
-
-type Tapes = [Tape];
-
-export default (props: {
-  tapeId: string | null;
-}) => {
+export default ({ route, navigation }: Props) => {
   const [tape, setTape] = useState<Tape | null>(null);
 
   let camera: Camera | null = new Camera({});
@@ -70,6 +55,9 @@ export default (props: {
   };
 
   const storeRecord = async (record:Record):Promise<void> => {
+    if (!tape) {
+      return;
+    }
     const records = tape.records;
     records.push(record);
     await AsyncStorage.setItem(`@tape:${tapeId}`, JSON.stringify({ ...tape, records }));
@@ -80,7 +68,7 @@ export default (props: {
     AsyncStorage.clear();
   };
 
-  const tapeId: string = props.tapeId || createId();
+  const tapeId: string = route.params.tapeId || createId();
   const thumbs: string[] = tape && tape.records
     ? tape.records.map((item: Record) => item.thumbUri).slice(-3)
     : [] ;
