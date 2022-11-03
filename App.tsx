@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { Button, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
+import { Button, StyleSheet, Text, SafeAreaView, View, StatusBar} from 'react-native';
 import { Camera } from 'expo-camera';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -58,18 +58,21 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
+    <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
+      <StatusBar backgroundColor='transparent' barStyle='light-content' />
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Home"
           screenOptions={{
-            // headerShown: false
+            headerShown: false,
+            animation: 'fade',
+            animationDuration: 100
           }}>
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Record" component={Record} options={{ tapeId: getTapeId() } as NativeStackNavigationOptions} />
         </Stack.Navigator>
       </NavigationContainer>
-    </View>
+    </SafeAreaView>
   );
 }
 

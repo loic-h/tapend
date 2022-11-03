@@ -1,43 +1,21 @@
-import { useState, useEffect } from 'react';
-import { Fragment } from 'react';
-import { View, TouchableHighlight, StyleSheet, Text, Image } from 'react-native';
+import { View, StyleSheet, Pressable, TouchableHighlight } from "react-native";
 import { Camera } from 'expo-camera';
-import * as VideoThumbnails from 'expo-video-thumbnails';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import globalStyles from '../styles';
+import BackIcon from '../components/icons/Back';
+import tokens from '../tokens/index.json';
+import NavigationBar from '../components/NavigationBar';
+import RecordButton from '../components/RecordButton';
+import AddIcon from '../components/icons/Add';
+import type { RootStackParamList } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { Tape, Record, RootStackParamList } from '../types';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Record'>
-
-export default ({ route, navigation }: Props) => {
-  const [tape, setTape] = useState<Tape | null>(null);
-
+export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Record'>) => {
   let camera: Camera | null = new Camera({});
-
-  const createId = ():string => {
-    return '456';
-  };
-
-  const getTape = async (tapeId:string): Promise<Tape | null> => {
-    try {
-      const item = await AsyncStorage.getItem(`@tape:${tapeId}`);
-      if (item !== null) {
-        return JSON.parse(item);
-      }
-      return {
-        id: tapeId,
-        records: [],
-      };
-    } catch (e) {
-      return null;
-    }
-  };
 
   const startRecording = async ():Promise<void> => {
     if(camera) {
-      console.log('startRecording')
       const data = await camera.recordAsync();
-      await afterRecord(data.uri);
+      // await afterRecord(data.uri);
     }
   };
 
@@ -45,128 +23,67 @@ export default ({ route, navigation }: Props) => {
     camera?.stopRecording();
   };
 
-  const afterRecord = async (videoUri: string): Promise<void> => {
-    console.log('afterRecord')
-    const { uri: thumbUri } = await VideoThumbnails.getThumbnailAsync(videoUri);
-    await storeRecord({
-      videoUri,
-      thumbUri,
-    });
-  };
-
-  const storeRecord = async (record:Record):Promise<void> => {
-    if (!tape) {
-      return;
-    }
-    const records = tape.records;
-    records.push(record);
-    await AsyncStorage.setItem(`@tape:${tapeId}`, JSON.stringify({ ...tape, records }));
-    const res = await AsyncStorage.getItem(`@tape:${tapeId}`);
-  };
-
-  const clearStorage = async () => {
-    AsyncStorage.clear();
-  };
-
-  const tapeId: string = route.params.tapeId || createId();
-  const thumbs: string[] = tape && tape.records
-    ? tape.records.map((item: Record) => item.thumbUri).slice(-3)
-    : [] ;
-
-  useEffect(() => {
-    const initTape = async () => {
-      const item = await getTape(tapeId);
-      setTape(item);
-      await AsyncStorage.clear();
-    }
-    if (!tape) {
-      initTape();
-    }
-    console.log(thumbs);
-  }, []);
-
-  if (!tapeId) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading</Text>
-      </View>
-    );
-  }
+  const Mark = () => <AddIcon
+    color={ tokens.color.white }
+    width="12" height="12" />
 
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} ref={ref => camera = ref}>
-        <View style={styles.cameraPlaceholder} />
-        <View style={styles.buttonContainer}>
-          <View style={styles.thumbWrapper}>
-            <View style={styles.thumbContainer}>
-              {thumbs.map((uri: string, index: Number) => {
-                return <Image style={styles.thumb} source={{ uri }} key={`${index}`} />
-              })}
-            </View>
+      <NavigationBar>
+        <Pressable onPress={ () => navigation.goBack() }>
+          <BackIcon color={tokens.color.white} width="21" height="21" />
+        </Pressable>
+      </NavigationBar>
+      <View style={ styles.cameraWrapper }>
+        <Camera style={styles.camera} ref={ref => camera = ref}>
+          <View style={styles.markLine}>
+            <Mark />
+            <Mark />
           </View>
-
-          <TouchableHighlight style={styles.button} onPressIn={startRecording} onPressOut={stopRecording}>
-            <Fragment />
-          </TouchableHighlight>
-
-          <View style={styles.buttonContainerPlaceholder}></View>
-        </View>
-      </Camera>
+          <View style={styles.markLine}>
+            <Mark />
+            <Mark />
+          </View>
+        </Camera>
+      </View>
+      <View style={styles.controls}>
+        <RecordButton on={startRecording} off={stopRecording} />
+      </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    flexGrow: 1,
-    justifyContent: 'center',
+    ...globalStyles.view.default,
+  },
+  cameraWrapper: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginLeft: -15,
+    marginRight: -15,
+    position: 'relative',
   },
   camera: {
     display: 'flex',
-    flexGrow: 1,
-    flexDirection: 'column',
-  },
-  cameraPlaceholder: {
-    flexGrow: 1,
-  },
-  buttonContainer: {
-    display: 'flex',
-    flexShrink: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'blue',
-    padding: 32,
-  },
-  buttonContainerPlaceholder: {
-    flexGrow: 1,
-    flexShrink: 0,
-    backgroundColor: 'green',
-  },
-  button: {
-    flexGrow: 0,
-    flexShrink: 1,
-    width: 60,
+    backgroundColor: 'red',
     aspectRatio: 1,
-    backgroundColor: 'red',
-    borderRadius: 100,
+    flexDirection: 'column',
+    justifyContent: 'space-evenly',
   },
-  thumbWrapper: {
-    flexGrow: 1,
-    flexShrink: 0,
-  },
-  thumbContainer: {
+  markLine: {
     display: 'flex',
-    width: 60,
-    height: 60,
-    position: 'absolute',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
-  thumb: {
-    width: 60,
-    height: 60,
-    borderRadius: 4,
-    backgroundColor: 'red',
-    objectFit: 'cover',
+  controls: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    flexGrow: 1,
   },
+  recordButton: {
+
+  }
 });

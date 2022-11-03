@@ -14,6 +14,7 @@ export default {
       flexGrow: 1,
       backgroundColor: color.black,
       display: 'flex',
+      padding: 15,
     }
   }),
 };
