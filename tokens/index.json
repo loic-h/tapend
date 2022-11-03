@@ -1,0 +1,18 @@
+{
+  "color": {
+    "black": "#14191E",
+    "red": "#C84B4B",
+    "darkGrey": "#33373B",
+    "white": "#FAFAFA"
+  },
+  "font": {
+    "family": {
+      "inter": "Inter-Regular",
+      "interBold": "Inter-Bold",
+      "robotoMono": "Robot-Mono"
+    },
+    "size": {
+      "default": 18
+    }
+  }
+}
