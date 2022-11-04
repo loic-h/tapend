@@ -1,5 +1,7 @@
+export type Id = string;
+
 export type Tape = {
-  id: string;
+  id: Id;
   // added: string;
   // modified: string;
   // order: string;

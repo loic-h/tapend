@@ -1,4 +1,4 @@
-import { View, StyleSheet, Pressable, TouchableHighlight } from "react-native";
+import { View, StyleSheet, Pressable, Image } from "react-native";
 import { Camera } from 'expo-camera';
 import globalStyles from '../styles';
 import BackIcon from '../components/icons/Back';
@@ -7,11 +7,24 @@ import NavigationBar from '../components/NavigationBar';
 import RecordButton from '../components/RecordButton';
 import AddIcon from '../components/icons/Add';
 import useCameraController from "../hooks/useCameraController";
-import type { RootStackParamList } from '../types';
+import { useSelector } from "react-redux";
+import { getActiveTape, RootState } from '../store';
+import type { RootStackParamList, Record } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+import { useEffect } from "react";
 
 export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Record'>) => {
   const camera = useCameraController();
+  const tape = useSelector((state: RootState) => getActiveTape(state.tapes));
+
+  const thumbs: string[] = tape && tape.records
+    ? tape.records.map((item: Record) => item.thumbUri).slice(-3)
+    : [] ;
+
+    useEffect(() => {
+    console.log(tape)
+  })
 
   const Mark = () => <AddIcon
     color={ tokens.color.white }
@@ -37,6 +50,13 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Reco
         </Camera>
       </View>
       <View style={styles.controls}>
+        <View style={styles.thumbWrapper}>
+          <View style={styles.thumbContainer}>
+            {thumbs.map((uri: string, index: Number) => {
+              return <Image style={styles.thumb} source={{ uri }} key={`${index}`} />
+            })}
+          </View>
+        </View>
         <RecordButton on={camera.start} off={camera.stop} />
       </View>
     </View>
@@ -75,5 +95,22 @@ const styles = StyleSheet.create({
   },
   recordButton: {
 
-  }
+  },
+  thumbWrapper: {
+    flexGrow: 1,
+    flexShrink: 0,
+  },
+  thumbContainer: {
+    display: 'flex',
+    width: 60,
+    height: 60,
+    position: 'absolute',
+  },
+  thumb: {
+    width: 60,
+    height: 60,
+    borderRadius: 4,
+    backgroundColor: 'red',
+    objectFit: 'cover',
+  },
 });

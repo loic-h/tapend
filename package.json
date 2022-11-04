@@ -13,6 +13,7 @@
     "@react-native-async-storage/async-storage": "~1.17.3",
     "@react-navigation/native": "^6.0.13",
     "@react-navigation/native-stack": "^6.9.1",
+    "@reduxjs/toolkit": "^1.9.0",
     "expo": "~46.0.16",
     "expo-camera": "~12.3.0",
     "expo-font": "~10.2.0",
@@ -26,6 +27,8 @@
     "react-native-screens": "~3.15.0",
     "react-native-svg": "12.3.0",
     "react-native-web": "~0.18.7",
+    "react-redux": "^8.0.5",
+    "redux-persist": "^6.0.0",
     "rimraf": "^3.0.2"
   },
   "devDependencies": {
