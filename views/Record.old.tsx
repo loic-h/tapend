@@ -10,34 +10,35 @@ import type { Tape, Record, RootStackParamList } from '../types';
 type Props = NativeStackScreenProps<RootStackParamList, 'Record'>
 
 export default ({ route, navigation }: Props) => {
-  const [tape, setTape] = useState<Tape | null>(null);
+  // const [tape, setTape] = useState<Tape | null>(null);
 
   let camera: Camera | null = new Camera({});
 
-  const createId = ():string => {
-    return '456';
-  };
+  // const createId = ():string => {
+  //   return '456';
+  // };
 
-  const getTape = async (tapeId:string): Promise<Tape | null> => {
-    try {
-      const item = await AsyncStorage.getItem(`@tape:${tapeId}`);
-      if (item !== null) {
-        return JSON.parse(item);
-      }
-      return {
-        id: tapeId,
-        records: [],
-      };
-    } catch (e) {
-      return null;
-    }
-  };
+  // const getTape = async (tapeId:string): Promise<Tape | null> => {
+  //   try {
+  //     const item = await AsyncStorage.getItem(`@tape:${tapeId}`);
+  //     if (item !== null) {
+  //       return JSON.parse(item);
+  //     }
+  //     return {
+  //       id: tapeId,
+  //       records: [],
+  //     };
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // };
 
   const startRecording = async ():Promise<void> => {
     if(camera) {
       console.log('startRecording')
       const data = await camera.recordAsync();
-      await afterRecord(data.uri);
+      console.log(data.uri)
+      // await afterRecord(data.uri);
     }
   };
 
@@ -45,53 +46,53 @@ export default ({ route, navigation }: Props) => {
     camera?.stopRecording();
   };
 
-  const afterRecord = async (videoUri: string): Promise<void> => {
-    console.log('afterRecord')
-    const { uri: thumbUri } = await VideoThumbnails.getThumbnailAsync(videoUri);
-    await storeRecord({
-      videoUri,
-      thumbUri,
-    });
-  };
+  // const afterRecord = async (videoUri: string): Promise<void> => {
+  //   console.log('afterRecord')
+  //   const { uri: thumbUri } = await VideoThumbnails.getThumbnailAsync(videoUri);
+  //   await storeRecord({
+  //     videoUri,
+  //     thumbUri,
+  //   });
+  // };
 
-  const storeRecord = async (record:Record):Promise<void> => {
-    if (!tape) {
-      return;
-    }
-    const records = tape.records;
-    records.push(record);
-    await AsyncStorage.setItem(`@tape:${tapeId}`, JSON.stringify({ ...tape, records }));
-    const res = await AsyncStorage.getItem(`@tape:${tapeId}`);
-  };
+  // const storeRecord = async (record:Record):Promise<void> => {
+  //   if (!tape) {
+  //     return;
+  //   }
+  //   const records = tape.records;
+  //   records.push(record);
+  //   await AsyncStorage.setItem(`@tape:${tapeId}`, JSON.stringify({ ...tape, records }));
+  //   const res = await AsyncStorage.getItem(`@tape:${tapeId}`);
+  // };
 
-  const clearStorage = async () => {
-    AsyncStorage.clear();
-  };
+  // const clearStorage = async () => {
+  //   AsyncStorage.clear();
+  // };
 
-  const tapeId: string = route.params.tapeId || createId();
-  const thumbs: string[] = tape && tape.records
-    ? tape.records.map((item: Record) => item.thumbUri).slice(-3)
-    : [] ;
+  // const tapeId: string = route.params.tapeId || createId();
+  // const thumbs: string[] = tape && tape.records
+  //   ? tape.records.map((item: Record) => item.thumbUri).slice(-3)
+  //   : [] ;
 
-  useEffect(() => {
-    const initTape = async () => {
-      const item = await getTape(tapeId);
-      setTape(item);
-      await AsyncStorage.clear();
-    }
-    if (!tape) {
-      initTape();
-    }
-    console.log(thumbs);
-  }, []);
+  // useEffect(() => {
+  //   const initTape = async () => {
+  //     const item = await getTape(tapeId);
+  //     setTape(item);
+  //     await AsyncStorage.clear();
+  //   }
+  //   if (!tape) {
+  //     initTape();
+  //   }
+  //   console.log(thumbs);
+  // }, []);
 
-  if (!tapeId) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading</Text>
-      </View>
-    );
-  }
+  // if (!tapeId) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <Text>Loading</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>
@@ -100,9 +101,9 @@ export default ({ route, navigation }: Props) => {
         <View style={styles.buttonContainer}>
           <View style={styles.thumbWrapper}>
             <View style={styles.thumbContainer}>
-              {thumbs.map((uri: string, index: Number) => {
+              {/*thumbs.map((uri: string, index: Number) => {
                 return <Image style={styles.thumb} source={{ uri }} key={`${index}`} />
-              })}
+              })*/}
             </View>
           </View>
 

@@ -6,22 +6,12 @@ import tokens from '../tokens/index.json';
 import NavigationBar from '../components/NavigationBar';
 import RecordButton from '../components/RecordButton';
 import AddIcon from '../components/icons/Add';
+import useCameraController from "../hooks/useCameraController";
 import type { RootStackParamList } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Record'>) => {
-  let camera: Camera | null = new Camera({});
-
-  const startRecording = async ():Promise<void> => {
-    if(camera) {
-      const data = await camera.recordAsync();
-      // await afterRecord(data.uri);
-    }
-  };
-
-  const stopRecording = async ():Promise<void> => {
-    camera?.stopRecording();
-  };
+  const camera = useCameraController();
 
   const Mark = () => <AddIcon
     color={ tokens.color.white }
@@ -35,7 +25,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Reco
         </Pressable>
       </NavigationBar>
       <View style={ styles.cameraWrapper }>
-        <Camera style={styles.camera} ref={ref => camera = ref}>
+        <Camera style={styles.camera} ref={camera.el}>
           <View style={styles.markLine}>
             <Mark />
             <Mark />
@@ -47,7 +37,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Reco
         </Camera>
       </View>
       <View style={styles.controls}>
-        <RecordButton on={startRecording} off={stopRecording} />
+        <RecordButton on={camera.start} off={camera.stop} />
       </View>
     </View>
   )
