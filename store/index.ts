@@ -40,14 +40,12 @@ const tapes = createSlice({
       // In case of a new tape, we set the active value to the newly created id
       state.active = tape.id;
       tape.records.push(action.payload);
-      console.log(state, tape.records)
     },
     // TODO: RUD actions for records
   }
 });
 
 export const getActiveTape = (state: TapesState): Tape | null  => {
-  console.log('getActiveTape', state.active)
   if (typeof state.active !== 'string') {
     return null;
   }
