@@ -1,26 +1,24 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle, Text } from 'react-native';
 import { Camera, CameraDevice, useCameraDevices } from 'react-native-vision-camera';
 import useCameraController from '../hooks/useCameraController';
 import { useDispatch } from 'react-redux';
 import AddIcon from '../components/icons/Add';
-import { store, addRecord } from '../store';
+import { addRecord } from '../store';
 import tokens from '../tokens/index.json';
-import type { Record } from '../types';
 
 type Props = {
   style?: StyleProp<ViewStyle>,
   record: boolean
 };
 
-
-
 export default ({ style, record = false }: Props) => {
   let cameraRef = useRef<Camera>(null);
   const camera = useCameraController();
   const devices = useCameraDevices();
   const device = devices.back as CameraDevice;
-  const [isRecording, setIsRecording] = useState(false)
+  const [isRecording, setIsRecording] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (record) {
@@ -31,8 +29,11 @@ export default ({ style, record = false }: Props) => {
   }, [record]);
 
   const start = () => {
-    camera.start(cameraRef);
     setIsRecording(true);
+    camera.start(cameraRef, (record) => {
+      console.log('Saving record', record)
+      dispatch(addRecord(record));
+    });
   }
 
   const stop = () => {
