@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
-import { Camera } from 'expo-camera';
-import * as VideoThumbnails from 'expo-video-thumbnails';
+import { Camera } from 'react-native-vision-camera';
 import { useDispatch } from 'react-redux';
 import { store, addRecord } from '../store';
 import type { Record } from '../types';
@@ -17,20 +16,23 @@ const useCameraController = (): CameraController => {
 
   const start = async ():Promise<void> => {
     if(camera) {
-      const data = await camera.current?.recordAsync();
-      if (!data) {
-        throw Error('No data found on camera record.')
-      }
-      await afterRecord(data.uri);
+      const data = camera.current?.startRecording({
+        onRecordingFinished: (video) => console.log(video),
+        onRecordingError: (error) => console.error(error),
+      });
+      // if (!data) {
+      //   throw Error('No data found on camera record.')
+      // }
+      // await afterRecord(data.uri);
     }
   };
 
   const afterRecord = async (videoUri: string): Promise<void> => {
-    const { uri: thumbUri } = await VideoThumbnails.getThumbnailAsync(videoUri);
-    await storeRecord({
-      videoUri,
-      thumbUri,
-    });
+    // const { uri: thumbUri } = await VideoThumbnails.getThumbnailAsync(videoUri);
+    // await storeRecord({
+    //   videoUri,
+    //   thumbUri,
+    // });
   };
 
   const storeRecord = async (record:Record):Promise<void> => {

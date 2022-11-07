@@ -1,69 +1,50 @@
-import { useEffect, useCallback } from 'react';
-import { Button, StyleSheet, Text, SafeAreaView, View, StatusBar} from 'react-native';
-import { Camera } from 'expo-camera';
+import { StyleSheet, SafeAreaView, StatusBar, View, Text} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Record from './views/Record';
 import Home from './views/Home';
 import { color } from './tokens/index.json';
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
 import { Provider } from 'react-redux';
 import { store, persistor } from './store';
 import { PersistGate } from 'redux-persist/integration/react'
+import { Camera } from 'react-native-vision-camera';
 import type { RootStackParamList, Id } from './types';
 import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { useState, useEffect } from 'react';
+import globalStyles from './styles';
 
 export default function App() {
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [fontsLoaded] = useFonts({
-    'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
-    'Inter-Bold': require('./assets/fonts/Inter-Bold.ttf'),
-    'Roboto-Mono': require('./assets/fonts/RobotoMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    async function prepare() {
-      await SplashScreen.preventAutoHideAsync();
-    }
-    prepare();
-  }, []);
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
+  const [hasPermission, setHasPermission] = useState<boolean | any>(false);
 
   const Stack = createNativeStackNavigator<RootStackParamList>();
 
-  if (!permission) {
-    // Camera permissions are still loading
-    return <View />;
-  }
-
-  if (!permission.granted) {
-    // Camera permissions are not granted yet
-    return (
-      <View style={styles.container}>
-          <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-          <Button onPress={requestPermission} title="grant permission" />
-      </View>
-    );
-  }
+  const requestCameraPermission = async (): Promise<any> => {
+    const newCameraPermission = await Camera.requestCameraPermission()
+    const newMicrophonePermission = await Camera.requestMicrophonePermission()
+    const status = newCameraPermission === 'authorized' && newMicrophonePermission === 'authorized';
+    setHasPermission(status);
+  };
 
   const getTapeId = (): Id => {
     return '';
   };
 
+  useEffect(() => {
+    requestCameraPermission();
+  }, [])
+
+  if (!hasPermission) {
+    return(
+      <View style={styles.container}>
+        <Text style={{ color: color.white }}>No Permission</Text>
+      </View>
+    );
+  }
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
+        <SafeAreaView style={globalStyles.view.default}>
           <StatusBar backgroundColor='transparent' barStyle='light-content' />
           <NavigationContainer>
             <Stack.Navigator
@@ -85,10 +66,8 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    flexGrow: 1,
+    ...globalStyles.view.default,
+    alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: color.black,
-    color: color.white,
-  },
+  }
 });

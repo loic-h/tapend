@@ -4,7 +4,7 @@ import { color, font } from '../tokens/index.json';
 export default {
   font: StyleSheet.create({
     default: {
-      fontFamily: 'Inter-Regular',
+      fontFamily: font.family.inter,
       color: color.white,
       fontSize: font.size.default,
     }

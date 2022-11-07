@@ -1,5 +1,5 @@
 import { View, StyleSheet, Pressable, Image } from "react-native";
-import { Camera } from 'expo-camera';
+import { Camera, CameraDevice, useCameraDevices } from 'react-native-vision-camera';
 import globalStyles from '../styles';
 import BackIcon from '../components/icons/Back';
 import tokens from '../tokens/index.json';
@@ -12,10 +12,14 @@ import { getActiveTape, RootState } from '../store';
 import type { RootStackParamList, Record } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Record'>) => {
-  const camera = useCameraController();
+  // const camera = useCameraController();
+  const camera = useRef<Camera>(null)
+  const devices = useCameraDevices();
+  const device = devices.back as CameraDevice;
+
   const tape = useSelector((state: RootState) => getActiveTape(state.tapes));
 
   const thumbs: string[] = tape && tape.records
@@ -25,6 +29,19 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Reco
     useEffect(() => {
     console.log(tape)
   })
+
+
+  const start = () => {
+    camera.current?.startRecording({
+      flash: 'on',
+      onRecordingFinished: (video) => console.log(video),
+      onRecordingError: (error) => console.error(error),
+    })
+  }
+
+  const stop = async ():Promise<void> => {
+    camera.current?.stopRecording();
+  };
 
   const Mark = () => <AddIcon
     color={ tokens.color.white }
@@ -38,16 +55,23 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Reco
         </Pressable>
       </NavigationBar>
       <View style={ styles.cameraWrapper }>
-        <Camera style={styles.camera} ref={camera.el}>
-          <View style={styles.markLine}>
-            <Mark />
-            <Mark />
-          </View>
-          <View style={styles.markLine}>
-            <Mark />
-            <Mark />
-          </View>
-        </Camera>
+        { camera && (
+          <Camera
+            style={styles.camera}
+            ref={camera}
+            device={device}
+            isActive={true}
+            video={true}>
+            <View style={styles.markLine}>
+              <Mark />
+              <Mark />
+            </View>
+            <View style={styles.markLine}>
+              <Mark />
+              <Mark />
+            </View>
+          </Camera>
+        )}
       </View>
       <View style={styles.controls}>
         <View style={styles.thumbWrapper}>
@@ -57,7 +81,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Reco
             })}
           </View>
         </View>
-        <RecordButton on={camera.start} off={camera.stop} />
+        <RecordButton on={start} off={stop} />
       </View>
     </View>
   )
