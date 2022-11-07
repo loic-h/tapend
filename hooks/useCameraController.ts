@@ -22,7 +22,7 @@ const useCameraController = (): CameraController => {
     ref.current?.startRecording({
       onRecordingFinished: (video) => afterRecord(video.path, onComplete),
       onRecordingError: (error) => {
-        throw new Error(`${error}`)
+        throw new Error(`${error.code}`)
       },
     });
   };

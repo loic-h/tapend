@@ -8,6 +8,7 @@ import NavigationBar from '../components/NavigationBar';
 import RecordButton from '../components/RecordButton';
 import { useSelector } from "react-redux";
 import { getActiveTape, RootState } from '../store';
+import { color } from '../tokens/index.json';
 import type { RootStackParamList, Record } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -16,8 +17,10 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Reco
   const tape = useSelector((state: RootState) => getActiveTape(state.tapes));
   const [record, setRecord] = useState(false);
 
+  const thumbsLength = 5;
+
   const thumbs: string[] = tape && tape.records
-    ? tape.records.map((item: Record) => item.thumbUri).slice(-3)
+    ? tape.records.map((item: Record) => item.thumbUri).slice(-thumbsLength).reverse()
     : [] ;
 
   return (
@@ -29,14 +32,30 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Reco
       </NavigationBar>
       <Camera record={record} />
       <View style={styles.controls}>
-        <View style={styles.thumbWrapper}>
-          <View style={styles.thumbContainer}>
-            {thumbs.map((uri: string, index: Number) => {
-              return <Image style={styles.thumb} source={{ uri }} key={`${index}`} />
-            })}
+        <View style={styles.thumbsWrapper}>
+          <View style={styles.thumbsContainer}>
+            {thumbs.map((uri: string, index: number) => {
+              console.log((thumbsLength) - index)
+              console.log(uri)
+              return (
+                <View style={{
+                  ...styles.thumbWrapper,
+                  right: index * 15,
+                  zIndex: (thumbsLength) - index
+                }}
+                key={`${index}`}>
+                <Image style={{
+                  ...styles.thumb,
+                  opacity: 1 * (1 - (2 * index) / ( 2 + (2 * index)))
+                }} source={{ uri }} />
+              </View>
+            )})}
           </View>
         </View>
         <RecordButton on={() => setRecord(true)} off={() => setRecord(false)} />
+        <View style={styles.controlRight}>
+
+        </View>
       </View>
     </View>
   )
@@ -48,29 +67,44 @@ const styles = StyleSheet.create({
   },
   controls: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
     flexGrow: 1,
   },
   recordButton: {
-
-  },
-  thumbWrapper: {
-    flexGrow: 1,
     flexShrink: 0,
   },
-  thumbContainer: {
+  thumbsWrapper: {
+    flexGrow: 1,
+    flexShrink: 0,
+    flexBasis: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  thumbsContainer: {
     display: 'flex',
     width: 60,
     height: 60,
+    position: 'relative',
+  },
+  thumbWrapper: {
+    display: 'flex',
+    width: 60,
+    height: 60,
+    backgroundColor: color.black,
     position: 'absolute',
   },
   thumb: {
     width: 60,
     height: 60,
     borderRadius: 4,
-    backgroundColor: 'red',
     objectFit: 'cover',
   },
+  controlRight: {
+    flexGrow: 1,
+    flexShrink: 0,
+    flexBasis: '50%',
+  }
 });

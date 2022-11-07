@@ -51,7 +51,6 @@ export default ({ style, record = false }: Props) => {
     return (
       <View style={[style, styles.cameraWrapper]}>
         <View style={styles.placeholder}>
-          <Text style={{ color: 'white' }}></Text>
         </View>
       </View>
     )
@@ -85,10 +84,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     marginHorizontal: -15,
-  },
-  camera: {
-    borderRadius: 16,
-    overflow: 'hidden',
+    aspectRatio: 1,
+    backgroundColor: 'green'
   },
   cameraContainer: {
     aspectRatio: 1,

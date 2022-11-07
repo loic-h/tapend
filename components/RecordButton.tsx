@@ -20,9 +20,9 @@ export default ({ on, off }: React.PropsWithChildren<Props>) => {
 
 const styles = StyleSheet.create({
   button: {
-    width: 60,
-    height: 60,
-    borderRadius: 60,
+    width: 75,
+    height: 75,
+    borderRadius: 90,
     borderWidth: 4,
     borderColor: tokens.color.red,
   }
