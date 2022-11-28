@@ -1,17 +1,16 @@
 import { StyleSheet, SafeAreaView, StatusBar, View, Text} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Record from './views/Record';
-import Home from './views/Home';
+import Record from './screens/Record';
+import Home from './screens/Home';
 import { color } from './tokens/index.json';
 import { Provider } from 'react-redux';
-import { store, persistor } from './store';
+import { store, persistor, getActiveTape } from './store';
 import { PersistGate } from 'redux-persist/integration/react'
 import useCameraController from './hooks/useCameraController';
-import type { RootStackParamList, Id } from './types';
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { useState, useEffect } from 'react';
 import globalStyles from './styles';
+import type { RootStackParamList } from './types';
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState<boolean | any>(false);
@@ -19,17 +18,12 @@ export default function App() {
 
   const Stack = createNativeStackNavigator<RootStackParamList>();
 
-  const getTapeId = (): Id => {
-    return '';
-  };
-
   useEffect(() => {
     camera.requestPermissions()
       .then((hasPermission: boolean) => {
         setHasPermission(hasPermission)
     });
-  }, [])
-
+  }, []);
 
   return (
     <Provider store={store}>
@@ -50,7 +44,7 @@ export default function App() {
                 animationDuration: 100
               }}>
               <Stack.Screen name="Home" component={Home} />
-              <Stack.Screen name="Record" component={Record} options={{ tapeId: getTapeId() } as NativeStackNavigationOptions} />
+              <Stack.Screen name="Record" component={Record} />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>

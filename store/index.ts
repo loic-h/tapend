@@ -1,7 +1,7 @@
-import { combineReducers, configureStore, createSlice, nanoid } from '@reduxjs/toolkit';
+import { combineReducers, configureStore, createSlice, nanoid, createAction } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistStore, persistReducer, PERSIST } from 'redux-persist'
-import type { Tape, Id, Record } from '../types';
+import type { Tape, Id, Record, Tapes } from '../types';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 type TapesItems = { [id: Id]: Tape };
@@ -17,6 +17,8 @@ const initialTapesState: TapesState = {
   items: {},
   byId: [],
 };
+
+export const resetState = createAction('reset');
 
 const tapes = createSlice({
   name: 'tapes',
@@ -41,8 +43,19 @@ const tapes = createSlice({
       state.active = tape.id;
       tape.records.push(action.payload);
     },
+    setActive(state: TapesState, action: PayloadAction<Id | null>): void {
+      state.active = action.payload;
+    },
+    resetActive(state: TapesState): void {
+      state.active = null;
+    },
     // TODO: RUD actions for records
-  }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(resetState, () => {
+      return initialTapesState
+    })
+  },
 });
 
 export const getActiveTape = (state: TapesState): Tape | null  => {
@@ -50,12 +63,16 @@ export const getActiveTape = (state: TapesState): Tape | null  => {
     return null;
   }
   return state.items[state.active];
-}
+};
 
 const addTape = (state: TapesState, tape: Tape): void => {
   state.items[tape.id] = tape;
   state.byId.push(tape.id);
-}
+};
+
+export const listTapes = (state: TapesState): Tapes => {
+  return state.byId.map((id: Id) => state.items[id]);
+};
 
 const reducer = combineReducers({
   tapes: tapes.reducer
@@ -63,7 +80,7 @@ const reducer = combineReducers({
 
 export type RootState = ReturnType<typeof reducer>;
 
-export const { addRecord } = tapes.actions;
+export const { addRecord, setActive, resetActive } = tapes.actions;
 
 const persistConfig = {
   key: 'root',

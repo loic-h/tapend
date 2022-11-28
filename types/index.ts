@@ -1,3 +1,5 @@
+import type { RootState } from '../store';
+
 export type Id = string;
 
 export type Tape = {
@@ -15,11 +17,13 @@ export type Record = {
   // tapeId: string;
 }
 
-export type Tapes = [Tape];
+export type Tapes = Tape[];
 
-export type RecordProps = { tapeId: string | null };
+export type RecordProps = {};
 
 export type RootStackParamList = {
   Home: undefined;
   Record: RecordProps;
 };
+
+export type { RootState };

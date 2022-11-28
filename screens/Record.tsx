@@ -1,21 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, StyleSheet, Pressable, Image } from "react-native";
+import { useSelector } from "react-redux";
 import Camera from '../components/Camera';
-import globalStyles from '../styles';
 import BackIcon from '../components/icons/Back';
-import tokens from '../tokens/index.json';
 import NavigationBar from '../components/NavigationBar';
 import RecordButton from '../components/RecordButton';
-import { useSelector } from "react-redux";
-import { getActiveTape, RootState } from '../store';
-import { color } from '../tokens/index.json';
+import Thumb from '../components/Thumb';
+import globalStyles from '../styles';
+import tokens from '../tokens/index.json';
+import { getActiveTape } from '../store';
 import type { RootStackParamList, Record } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-
+import type { RootState } from '../store';
 
 export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Record'>) => {
   const tape = useSelector((state: RootState) => getActiveTape(state.tapes));
   const [record, setRecord] = useState(false);
+
+  useEffect(() => {
+    if (tape) {
+      console.log(`Mounting Record screen for Tape ${tape.id}`);
+    } else {
+      console.log(`Mounting Record screen for new Tape`);
+    }
+  }, []);
 
   const thumbsLength = 5;
 
@@ -35,27 +43,22 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Reco
         <View style={styles.thumbsWrapper}>
           <View style={styles.thumbsContainer}>
             {thumbs.map((uri: string, index: number) => {
-              console.log((thumbsLength) - index)
-              console.log(uri)
               return (
-                <View style={{
-                  ...styles.thumbWrapper,
-                  right: index * 15,
-                  zIndex: (thumbsLength) - index
-                }}
-                key={`${index}`}>
-                <Image style={{
-                  ...styles.thumb,
-                  opacity: 1 * (1 - (2 * index) / ( 2 + (2 * index)))
-                }} source={{ uri }} />
-              </View>
-            )})}
+                <Thumb
+                  key={index}
+                  style={{
+                    ...styles.thumb,
+                    right: index * 15,
+                    zIndex: (thumbsLength) - index
+                  }}
+                  uri={uri}
+                  imageOpacity={1 * (1 - (2 * index) / ( 2 + (2 * index)))} />
+              )})
+            }
           </View>
         </View>
         <RecordButton on={() => setRecord(true)} off={() => setRecord(false)} />
-        <View style={styles.controlRight}>
-
-        </View>
+        <View style={styles.controlRight} />
       </View>
     </View>
   )
@@ -89,18 +92,12 @@ const styles = StyleSheet.create({
     height: 60,
     position: 'relative',
   },
-  thumbWrapper: {
+  thumb: {
     display: 'flex',
     width: 60,
     height: 60,
-    backgroundColor: color.black,
+    backgroundColor: tokens.color.black,
     position: 'absolute',
-  },
-  thumb: {
-    width: 60,
-    height: 60,
-    borderRadius: 4,
-    objectFit: 'cover',
   },
   controlRight: {
     flexGrow: 1,
