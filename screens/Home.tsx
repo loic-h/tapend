@@ -16,8 +16,12 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home
     console.log(`Mounting Home screen with tapes: ${
       tapes.map((tape: Tape) => tape.id).join(', ')
     }`)
-    dispatch(resetActive());
   }, []);
+
+  const goToNewRecord = () => {
+    dispatch(resetActive());
+    navigation.navigate('Record', {})
+  };
 
   return (
     <View style={styles.container}>
@@ -25,7 +29,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home
         source={require('../assets/logo.png')} />
       <Pressable
         style={styles.newButton}
-        onPress={() => navigation.navigate('Record', {})}>
+        onPress={goToNewRecord}>
         <Text
           style={styles.newButtonPlus}>
           +
@@ -37,13 +41,11 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home
       </Pressable>
       <View style={styles.tapes}>
         {tapes.map((tape: Tape, index: number) => {
-          console.log(tape.records)
           return (
           <View key={index} style={styles.tape}>
             <Text style={{color: tokens.color.white}}>Tape #{index} - {tape.records.length} records</Text>
             <View key={index} style={styles.rail}>
                 {tape.records.map((record: Record, index: number) => {
-                  console.log(index)
                   return (
                     <Thumb uri={record.thumbUri} key={index} style={styles.thumb} />
                 )})}
