@@ -4,7 +4,7 @@ import tokens from '../tokens/index.json';
 type Props = {
   uri: string,
   imageOpacity?: number,
-  style?: ViewStyle,
+  style?: ViewStyle | ViewStyle[],
   borderRadius?: number,
 };
 

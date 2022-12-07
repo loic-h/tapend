@@ -14,5 +14,12 @@
     "size": {
       "default": 18
     }
+  },
+  "space": {
+    "tiny": 6,
+    "x-small": 12,
+    "small": 18,
+    "medium": 24,
+    "large": 36
   }
 }

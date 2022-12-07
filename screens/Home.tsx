@@ -43,12 +43,17 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home
         {tapes.map((tape: Tape, index: number) => {
           return (
           <View key={index} style={styles.tape}>
-            <Text style={{color: tokens.color.white}}>Tape #{index} - {tape.records.length} records</Text>
+            <Text style={styles.tapeHeadline}>Tape #{index}</Text>
             <View key={index} style={styles.rail}>
+              <View style={styles.railContainer}>
                 {tape.records.map((record: Record, index: number) => {
                   return (
-                    <Thumb uri={record.thumbUri} key={index} style={styles.thumb} />
+                    <Thumb uri={record.thumbUri} key={index} style={{
+                      ...styles.thumb,
+                      ...(index === 0 ? styles.thumbFirst : {}),
+                    }} />
                 )})}
+              </View>
             </View>
           </View>
         )})}
@@ -86,19 +91,34 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline'
   },
   tapes: {
-    backgroundColor: 'pink',
-    alignSelf: 'stretch',
+    display: 'flex',
   },
-  tape: {},
+  tape: {
+    display: 'flex',
+    marginTop: tokens.space.large,
+  },
+  tapeHeadline: {
+    ...golbalStyles.font.bold,
+    marginBottom: tokens.space.tiny,
+  },
   rail: {
     display: 'flex',
     flexDirection: 'row',
-    backgroundColor: 'violet'
+  },
+  railContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    flexShrink: 1,
+    width: 'auto'
   },
   thumb: {
     width: 90,
     height: 90,
-    backgroundColor: 'red',
+    marginLeft: tokens.space.tiny,
+  },
+  thumbFirst: {
+    marginLeft: 0,
   },
   reset: {
     position: 'absolute',

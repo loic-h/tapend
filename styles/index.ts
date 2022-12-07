@@ -7,6 +7,11 @@ export default {
       fontFamily: font.family.inter,
       color: color.white,
       fontSize: font.size.default,
+    },
+    bold: {
+      fontFamily: font.family.interBold,
+      color: color.white,
+      fontSize: font.size.default,
     }
   }),
   view: StyleSheet.create({
@@ -15,6 +20,6 @@ export default {
       backgroundColor: color.black,
       display: 'flex',
       padding: 15,
-    }
+    },
   }),
 };
