@@ -23,6 +23,10 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home
     navigation.navigate('Record', {})
   };
 
+  const goToTape = (tapeId: string) => {
+    navigation.navigate('Record', {tapeId });
+  };
+
   return (
     <View style={styles.container}>
       <Image
@@ -42,7 +46,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home
       <View style={styles.tapes}>
         {tapes.map((tape: Tape, index: number) => {
           return (
-          <View key={index} style={styles.tape}>
+          <Pressable key={index} style={styles.tape} onPress={() => goToTape(tape.id)}>
             <Text style={styles.tapeHeadline}>Tape #{index}</Text>
             <View key={index} style={styles.rail}>
               <View style={styles.railContainer}>
@@ -55,7 +59,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home
                 )})}
               </View>
             </View>
-          </View>
+          </Pressable>
         )})}
       </View>
       <Pressable
@@ -92,6 +96,7 @@ const styles = StyleSheet.create({
   },
   tapes: {
     display: 'flex',
+    width: '100%',
   },
   tape: {
     display: 'flex',

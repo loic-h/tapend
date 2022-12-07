@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { View, StyleSheet, Pressable, Image } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Camera from '../components/Camera';
 import BackIcon from '../components/icons/Back';
 import NavigationBar from '../components/NavigationBar';
@@ -8,18 +8,22 @@ import RecordButton from '../components/RecordButton';
 import Thumb from '../components/Thumb';
 import globalStyles from '../styles';
 import tokens from '../tokens/index.json';
-import { getActiveTape } from '../store';
+import { getActiveTape, setActive } from '../store';
 import type { RootStackParamList, Record } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootState } from '../store';
 
-export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Record'>) => {
+export default ({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'Record'>) => {
   const tape = useSelector((state: RootState) => getActiveTape(state.tapes));
   const [record, setRecord] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (tape) {
-      console.log(`Mounting Record screen for Tape ${tape.id}`);
+    if (route.params.tapeId) {
+      console.log(`Mounting Record screen for routed Tape ${route.params.tapeId}`);
+      dispatch(setActive(route.params.tapeId));
+    } else if (tape) {
+      console.log(`Mounting Record screen for active Tape ${tape.id}`);
     } else {
       console.log(`Mounting Record screen for new Tape`);
     }

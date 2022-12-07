@@ -19,11 +19,15 @@ export type Record = {
 
 export type Tapes = Tape[];
 
-export type RecordProps = {};
+export type RecordProps = {
+  tapeId?: string,
+};
 
 export type RootStackParamList = {
   Home: undefined;
-  Record: RecordProps;
+  Record: {
+    tapeId?: string,
+  };
 };
 
 export type { RootState };
