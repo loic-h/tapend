@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistStore, persistReducer, PERSIST } from 'redux-persist'
 import type { Tape, Id, Record, Tapes } from '../types';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import { copyAssetsFileIOS } from 'react-native-fs';
 
 type TapesItems = { [id: Id]: Tape };
 
@@ -58,11 +59,15 @@ const tapes = createSlice({
   },
 });
 
+export const getTapeById = (state: TapesState, payload: string): Tape | null => {
+  return state.items[payload];
+};
+
 export const getActiveTape = (state: TapesState): Tape | null  => {
   if (typeof state.active !== 'string') {
     return null;
   }
-  return state.items[state.active];
+  return getTapeById(state, state.active);
 };
 
 const addTape = (state: TapesState, tape: Tape): void => {

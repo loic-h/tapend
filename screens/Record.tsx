@@ -8,13 +8,14 @@ import RecordButton from '../components/RecordButton';
 import Thumb from '../components/Thumb';
 import globalStyles from '../styles';
 import tokens from '../tokens/index.json';
-import { getActiveTape, setActive } from '../store';
+import { getActiveTape, setActive, getTapeById } from '../store';
+import useCurrentTape from '../hooks/useCurrentTape';
 import type { RootStackParamList, Record } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootState } from '../store';
 
 export default ({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'Record'>) => {
-  const tape = useSelector((state: RootState) => getActiveTape(state.tapes));
+  const tape = useCurrentTape();
   const [record, setRecord] = useState(false);
   const dispatch = useDispatch();
 

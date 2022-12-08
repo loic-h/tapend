@@ -1,12 +1,19 @@
+import { useState } from 'react';
 import { View, StyleSheet, Text, Pressable } from 'react-native';
+import Video from 'react-native-video';
 import globalStyles from '../styles';
 import BackIcon from '../components/icons/Back';
 import NavigationBar from '../components/NavigationBar';
 import tokens from '../tokens/index.json';
+import useCurrentTape from '../hooks/useCurrentTape';
 import type { RootStackParamList } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export default ({ route, navigation }: NativeStackScreenProps<RootStackParamList, 'Tape'>) => {
+  const tape = useCurrentTape();
+  const [currentRecord, setCurrentRecord] = useState(0);
+  const videoUri = tape?.records[currentRecord].videoUri;
+
   const goBack = () => {
     navigation.navigate('Record', { tapeId: route.params.tapeId });
   };
@@ -19,6 +26,10 @@ export default ({ route, navigation }: NativeStackScreenProps<RootStackParamList
         </Pressable>
         <Text style={styles.headline}>Tape {route.params.tapeId}</Text>
       </NavigationBar>
+      <Video
+        source={{ uri: videoUri }}
+        style={styles.video}
+        resizeMode={"cover"} />
     </View>
   );
 };
@@ -29,5 +40,10 @@ const styles = StyleSheet.create({
   },
   headline: {
     ...globalStyles.font.bold
+  },
+  video: {
+    aspectRatio: 1,
+    width: '100%',
+    backgroundColor: 'green',
   }
 });

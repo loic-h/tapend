@@ -1,8 +1,8 @@
 import React from 'react';
 import { Camera } from 'react-native-vision-camera';
 import { createThumbnail } from "react-native-create-thumbnail";
-import type { Record } from '../types';
 import { DocumentDirectoryPath, moveFile } from 'react-native-fs';
+import type { Record } from '../types';
 
 type CameraController = {
   start: (ref: React.RefObject<Camera>, onComplete: (record: Record) => void) => void;
@@ -18,12 +18,17 @@ const useCameraController = (): CameraController => {
       return;
     }
 
-    console.log('Start recording')
-    ref.current?.startRecording({
-      onRecordingFinished: (video) => afterRecord(video.path, onComplete),
-      onRecordingError: (error) => {
-        throw new Error(`Error while recording: ${error.code}`)
-      },
+    return new Promise((resolve, reject) => {
+      console.log('Start recording')
+      ref.current?.startRecording({
+        onRecordingFinished: async (video) => {
+          await afterRecord(video.path, onComplete);
+          resolve();
+        },
+        onRecordingError: (error) => {
+          reject(`Error while recording: ${error.code}`)
+        },
+      });
     });
   };
 
