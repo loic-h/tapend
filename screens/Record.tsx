@@ -19,7 +19,7 @@ export default ({ navigation, route }: NativeStackScreenProps<RootStackParamList
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (route.params.tapeId) {
+    if (route.params && route.params.tapeId) {
       console.log(`Mounting Record screen for routed Tape ${route.params.tapeId}`);
       dispatch(setActive(route.params.tapeId));
     } else if (tape) {
@@ -35,17 +35,23 @@ export default ({ navigation, route }: NativeStackScreenProps<RootStackParamList
     ? tape.records.map((item: Record) => item.thumbUri).slice(-thumbsLength).reverse()
     : [] ;
 
+  const goToTape = () => {
+    navigation.navigate('Tape', { tapeId: tape?.id });
+  };
+
   return (
     <View style={styles.container}>
       <NavigationBar>
-        <Pressable onPress={ () => navigation.goBack() }>
+        <Pressable onPress={ () => navigation.navigate('Home') }>
           <BackIcon color={tokens.color.white} width="21" height="21" />
         </Pressable>
       </NavigationBar>
       <Camera record={record} />
       <View style={styles.controls}>
         <View style={styles.thumbsWrapper}>
-          <View style={styles.thumbsContainer}>
+          <Pressable
+            style={styles.thumbsContainer}
+            onPress={goToTape}>
             {thumbs.map((uri: string, index: number) => {
               return (
                 <Thumb
@@ -59,7 +65,7 @@ export default ({ navigation, route }: NativeStackScreenProps<RootStackParamList
                   imageOpacity={1 * (1 - (2 * index) / ( 2 + (2 * index)))} />
               )})
             }
-          </View>
+          </Pressable>
         </View>
         <RecordButton on={() => setRecord(true)} off={() => setRecord(false)} />
         <View style={styles.controlRight} />
