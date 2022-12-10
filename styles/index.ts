@@ -12,6 +12,11 @@ export default {
       fontFamily: font.family.interBold,
       color: color.white,
       fontSize: font.size.default,
+    },
+    mono: {
+      fontFamily: font.family.robotoMono,
+      color: color.white,
+      fontSize: font.size.default,
     }
   }),
   view: StyleSheet.create({

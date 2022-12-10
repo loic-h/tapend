@@ -14,7 +14,7 @@ export type Tape = {
 export type Record = {
   videoUri: string;
   thumbUri: string;
-  // tapeId: string;
+  duration: number;
 }
 
 export type Tapes = Tape[];

@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginHorizontal: -15,
     aspectRatio: 1,
-    backgroundColor: 'green'
+    backgroundColor: tokens.color.darkGrey,
   },
   cameraContainer: {
     aspectRatio: 1,

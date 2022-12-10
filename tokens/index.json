@@ -3,13 +3,14 @@
     "black": "#14191E",
     "red": "#C84B4B",
     "darkGrey": "#33373B",
-    "white": "#FAFAFA"
+    "white": "#FAFAFA",
+    "yellow": "#F8E64A"
   },
   "font": {
     "family": {
       "inter": "Inter-Regular",
       "interBold": "Inter-Bold",
-      "robotoMono": "Robot-Mono"
+      "robotoMono": "RobotoMono-Regular"
     },
     "size": {
       "default": 18

@@ -15,7 +15,7 @@ export default function () {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={tape ? 'Record' : 'Home'}
+        initialRouteName={tape ? 'Tape' : 'Home'}
         screenOptions={{
           headerShown: false,
           animation: 'fade',

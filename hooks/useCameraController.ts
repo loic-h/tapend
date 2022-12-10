@@ -22,7 +22,8 @@ const useCameraController = (): CameraController => {
       console.log('Start recording')
       ref.current?.startRecording({
         onRecordingFinished: async (video) => {
-          await afterRecord(video.path, onComplete);
+          console.log(video.duration)
+          await afterRecord(video.path, video.duration, onComplete);
           resolve();
         },
         onRecordingError: (error) => {
@@ -41,7 +42,7 @@ const useCameraController = (): CameraController => {
     ref.current?.stopRecording();
   };
 
-  const afterRecord = async (videoUri: string, onComplete: (record: Record) => void): Promise<void> => {
+  const afterRecord = async (videoUri: string, duration: number, onComplete: (record: Record) => void): Promise<void> => {
     console.log('afterRecord')
     try {
       const thumbUri = await doThumbnail(videoUri);
@@ -56,6 +57,7 @@ const useCameraController = (): CameraController => {
         onComplete({
           videoUri: newVideoUri,
           thumbUri: newThumbUri,
+          duration,
         });
       }
     } catch(e) {
@@ -66,7 +68,7 @@ const useCameraController = (): CameraController => {
   const doThumbnail = async (videoUri: string): Promise<string> => {
     const thumb = createThumbnail({
       url: videoUri,
-      timeStamp: 1000,
+      timeStamp: 0,
     });
     return (await thumb).path;
   };
