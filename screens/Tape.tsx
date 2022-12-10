@@ -43,7 +43,9 @@ const styles = StyleSheet.create({
   },
   video: {
     aspectRatio: 1,
-    width: '100%',
     backgroundColor: 'green',
+    borderRadius: tokens.radius.large,
+    overflow: 'hidden',
+    marginHorizontal: -15,
   }
 });

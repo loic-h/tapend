@@ -81,7 +81,7 @@ export default ({ style, record = false }: Props) => {
 
 const styles = StyleSheet.create({
   cameraWrapper: {
-    borderRadius: 16,
+    borderRadius: tokens.radius.large,
     overflow: 'hidden',
     marginHorizontal: -15,
     aspectRatio: 1,
