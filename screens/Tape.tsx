@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Text, Pressable, ImageBackground } from 'react-native';
 import Video, { OnProgressData } from 'react-native-video';
 import globalStyles from '../styles';
@@ -7,6 +7,7 @@ import ResetIcon from '../components/icons/Reset';
 import PlayIcon from '../components/icons/Play';
 import PauseIcon from '../components/icons/Pause';
 import AddIcon from '../components/icons/Add';
+import IndicatorIcon from '../components/icons/Indicator';
 import NavigationBar from '../components/NavigationBar';
 import Timer from '../components/Timer';
 import tokens from '../tokens/index.json';
@@ -19,7 +20,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
   const [currentRecordIndex, setCurrentRecordIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const videoEl = useRef<Video>(null);
+  const videos = useRef<(Video | null)[]>([]);
 
   if (!tape) {
     return (
@@ -57,24 +58,37 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
   };
 
   const onVideoEnd = () => {
-    setPlaying(false);
+    console.log(`Record ended with index ${currentRecordIndex}`)
     if (currentRecordIndex >= tape.records.length - 1) {
+      setPlaying(false);
+      setCurrentTime(totalTime);
       return;
     }
     setCurrentRecordIndex(currentRecordIndex + 1);
-    setImmediate(() => setPlaying(true));
+    setCurrentTime(tape.records.slice(0, currentRecordIndex + 1).reduce((acc, record) => {
+      return record.duration + acc;
+    }, 0));
   };
 
   const seek = (time: number) => {
     let currentRecordIndex = 0;
     let t = 0;
-    while (t < time) {
-      t += currentRecord.duration;
-      currentRecordIndex ++;
+    let currentRecordTime = 0;
+
+    for(let i = 0; i < tape.records.length; i++) {
+      if (t < time) {
+        t += currentRecord.duration;
+        currentRecordIndex = i;
+      } else if (currentRecordIndex === i) {
+        currentRecordTime = time - t;
+      } else {
+        videos.current[i]?.seek(0)
+      }
     }
+
     setCurrentRecordIndex(currentRecordIndex);
     setCurrentTime(time);
-    videoEl?.current?.seek(time)
+    videos.current[currentRecordIndex]?.seek(currentRecordTime)
   };
 
   return (
@@ -88,7 +102,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
       { tape.records.map((record, index) => (
         <Video
           key={index}
-          ref={videoEl}
+          ref={el => videos.current[index] = el}
           source={{ uri: record.videoUri }}
           style={{
             ...styles.video,
@@ -104,6 +118,14 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
         <Timer time={totalTime} />
       </View>
       <View style={styles.progressBar}>
+      <IndicatorIcon
+        color={tokens.color.yellow}
+        width="12"
+        height="12"
+        style={{
+          ...styles.indicator,
+          left: `${currentTime * 100 / totalTime}%`
+        }} />
         { tape.records.map((record, index) => (
           <View key={index} style={{
             ...styles.progressChunk,
@@ -160,6 +182,12 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     marginTop: tokens.space.medium,
+    paddingTop: 15,
+  },
+  indicator: {
+    position: 'absolute',
+    top: 0,
+    marginLeft: -6,
   },
   progressChunk: {
     height: 2,
