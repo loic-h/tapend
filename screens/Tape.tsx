@@ -36,6 +36,9 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
   };
 
   const onPlayPress = () => {
+    if (currentTime >= totalTime) {
+      seek(0);
+    }
     setPlaying(!playing);
   };
 
