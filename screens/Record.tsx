@@ -8,11 +8,11 @@ import RecordButton from '../components/RecordButton';
 import Thumb from '../components/Thumb';
 import globalStyles from '../styles';
 import tokens from '../tokens/index.json';
-import { getActiveTape, setActive, getTapeById } from '../store';
+import { setActive } from '../store';
 import useCurrentTape from '../hooks/useCurrentTape';
+import { log } from '../services/log';
 import type { RootStackParamList, Record } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootState } from '../store';
 
 export default ({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'Record'>) => {
   const tape = useCurrentTape();
@@ -21,12 +21,12 @@ export default ({ navigation, route }: NativeStackScreenProps<RootStackParamList
 
   useEffect(() => {
     if (route.params && route.params.tapeId) {
-      console.log(`Mounting Record screen for routed Tape ${route.params.tapeId}`);
+      log(`Mounting Record screen for routed Tape ${route.params.tapeId}`);
       dispatch(setActive(route.params.tapeId));
     } else if (tape) {
-      console.log(`Mounting Record screen for active Tape ${tape.id}`);
+      log(`Mounting Record screen for active Tape ${tape.id}`);
     } else {
-      console.log(`Mounting Record screen for new Tape`);
+      log(`Mounting Record screen for new Tape`);
     }
   }, []);
 

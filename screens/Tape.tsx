@@ -12,6 +12,7 @@ import NavigationBar from '../components/NavigationBar';
 import Timer from '../components/Timer';
 import tokens from '../tokens/index.json';
 import useCurrentTape from '../hooks/useCurrentTape';
+import { log } from '../services/log';
 import type { RootStackParamList } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -61,7 +62,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
   };
 
   const onVideoEnd = () => {
-    console.log(`Record ended with index ${currentRecordIndex}`)
+    log(`Record ended with index ${currentRecordIndex}`)
     if (currentRecordIndex >= tape.records.length - 1) {
       setPlaying(false);
       setCurrentTime(totalTime);

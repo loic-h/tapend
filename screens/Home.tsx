@@ -5,6 +5,7 @@ import { listTapes, resetActive, resetState } from '../store';
 import tokens from '../tokens/index.json';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { log } from '../services/log';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList, Tape, RootState, Record } from '../types';
 
@@ -13,7 +14,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(`Mounting Home screen with tapes: ${
+    log(`Mounting Home screen with tapes: ${
       tapes.map((tape: Tape) => tape.id).join(', ')
     }`)
   }, []);

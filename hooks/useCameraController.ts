@@ -2,6 +2,7 @@ import React from 'react';
 import { Camera } from 'react-native-vision-camera';
 import { createThumbnail } from "react-native-create-thumbnail";
 import { DocumentDirectoryPath, moveFile } from 'react-native-fs';
+import { log } from '../services/log';
 import type { Record } from '../types';
 
 type CameraController = {
@@ -13,16 +14,16 @@ type CameraController = {
 
 const useCameraController = (): CameraController => {
   const start = async (ref: React.RefObject<Camera>, onComplete: (record: Record) => void):Promise<void> => {
-    console.log('start')
+    log('start')
     if(!ref) {
       return;
     }
 
     return new Promise((resolve, reject) => {
-      console.log('Start recording')
+      log('Start recording')
       ref.current?.startRecording({
         onRecordingFinished: async (video) => {
-          console.log(video.duration)
+          log(video.duration)
           await afterRecord(video.path, video.duration, onComplete);
           resolve();
         },
@@ -38,21 +39,21 @@ const useCameraController = (): CameraController => {
       return;
     }
 
-    console.log('Stop recording')
+    log('Stop recording')
     ref.current?.stopRecording();
   };
 
   const afterRecord = async (videoUri: string, duration: number, onComplete: (record: Record) => void): Promise<void> => {
-    console.log('afterRecord')
+    log('afterRecord')
     try {
       const thumbUri = await doThumbnail(videoUri);
-      console.log(`Generated thumbnail for video ${videoUri} at ${thumbUri}`);
+      log(`Generated thumbnail for video ${videoUri} at ${thumbUri}`);
 
-      console.log('Move files to doc folder');
+      log('Move files to doc folder');
       const newVideoUri = await moveToDocuments(videoUri);
       const newThumbUri = await moveToDocuments(thumbUri);
 
-      console.log('Thumbnail done: ', videoUri);
+      log('Thumbnail done: ', videoUri);
       if (onComplete) {
         onComplete({
           videoUri: newVideoUri,
@@ -61,7 +62,7 @@ const useCameraController = (): CameraController => {
         });
       }
     } catch(e) {
-      console.log('Error while processing video:', e);
+      log('Error while processing video:', e);
     }
   };
 
@@ -75,7 +76,7 @@ const useCameraController = (): CameraController => {
 
   const moveToDocuments = async (path: string) => {
     const destPath = `${DocumentDirectoryPath}/${getFilename(path)}`;
-    console.log(`Moved movie file to ${destPath}`);
+    log(`Moved movie file to ${destPath}`);
     await moveFile(path, destPath);
     return destPath;
   };

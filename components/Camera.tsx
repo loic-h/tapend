@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import AddIcon from '../components/icons/Add';
 import { addRecord } from '../store';
 import tokens from '../tokens/index.json';
+import { log } from '../services/log';
 
 type Props = {
   style?: StyleProp<ViewStyle>,
@@ -31,7 +32,7 @@ export default ({ style, record = false }: Props) => {
   const start = () => {
     setIsRecording(true);
     camera.start(cameraRef, (record) => {
-      console.log('Saving record', record)
+      log('Saving record', record)
       dispatch(addRecord(record));
     });
   }
