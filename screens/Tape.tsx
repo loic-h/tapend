@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Text, Pressable, ImageBackground } from 'react-native';
+import { useRef, useState } from 'react';
+import { View, StyleSheet, Text, Pressable, FlatList } from 'react-native';
 import Video, { OnProgressData } from 'react-native-video';
 import globalStyles from '../styles';
 import BackIcon from '../components/icons/Back';
@@ -15,6 +15,7 @@ import useCurrentTape from '../hooks/useCurrentTape';
 import { log } from '../services/log';
 import type { RootStackParamList } from '../types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import ThumbsRail from '../components/ThumbsRail';
 
 export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape'>) => {
   const tape = useCurrentTape();
@@ -29,8 +30,9 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
     )
   }
 
-  const currentRecord = tape.records[currentRecordIndex];
-  const totalTime = tape.records.reduce((a, r) => a + r.duration, 0) || 0;
+  const records = tape.records;
+  const currentRecord = records[currentRecordIndex];
+  const totalTime = records.reduce((a, r) => a + r.duration, 0) || 0;
 
   const onResetPress = () => {
     seek(0);
@@ -56,20 +58,20 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
   };
 
   const onVideoProgress = (data: OnProgressData) => {
-    setCurrentTime(tape.records.slice(0, currentRecordIndex).reduce((acc, record) => {
+    setCurrentTime(records.slice(0, currentRecordIndex).reduce((acc, record) => {
       return record.duration + acc;
     }, 0) + data.currentTime);
   };
 
   const onVideoEnd = () => {
     log(`Record ended with index ${currentRecordIndex}`)
-    if (currentRecordIndex >= tape.records.length - 1) {
+    if (currentRecordIndex >= records.length - 1) {
       setPlaying(false);
       setCurrentTime(totalTime);
       return;
     }
     setCurrentRecordIndex(currentRecordIndex + 1);
-    setCurrentTime(tape.records.slice(0, currentRecordIndex + 1).reduce((acc, record) => {
+    setCurrentTime(records.slice(0, currentRecordIndex + 1).reduce((acc, record) => {
       return record.duration + acc;
     }, 0));
   };
@@ -79,7 +81,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
     let t = 0;
     let currentRecordTime = 0;
 
-    for(let i = 0; i < tape.records.length; i++) {
+    for(let i = 0; i < records.length; i++) {
       if (t < time) {
         t += currentRecord.duration;
         currentRecordIndex = i;
@@ -103,7 +105,8 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
         </Pressable>
         <Text style={styles.headline}>Tape {tape.id}</Text>
       </NavigationBar>
-      { tape.records.map((record, index) => (
+
+      { records.map((record, index) => (
         <Video
           key={index}
           ref={el => videos.current[index] = el}
@@ -117,20 +120,22 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
           onProgress={onVideoProgress}
           onEnd={onVideoEnd} />
       ))}
+
       <View style={styles.timerBar}>
         <Timer time={currentTime} />
         <Timer time={totalTime} />
       </View>
+
       <View style={styles.progressBar}>
-      <IndicatorIcon
-        color={tokens.color.yellow}
-        width="12"
-        height="12"
-        style={{
-          ...styles.indicator,
-          left: `${currentTime * 100 / totalTime}%`
-        }} />
-        { tape.records.map((record, index) => (
+        <IndicatorIcon
+          color={tokens.color.yellow}
+          width="12"
+          height="12"
+          style={{
+            ...styles.indicator,
+            left: `${currentTime * 100 / totalTime}%`
+          }} />
+        { records.map((record, index) => (
           <View key={index} style={{
             ...styles.progressChunk,
             ...(index === 0 ? styles.progressChunkFirst : {}),
@@ -139,6 +144,13 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
           }} />
         ))}
       </View>
+
+      <View style={styles.thumbsRailContainer}>
+        {records.length > 0 && (
+          <ThumbsRail style={styles.thumbsRail} items={records} activeIndex={currentRecordIndex} />
+        )}
+      </View>
+
       <View style={styles.controls}>
         <Pressable onPress={onResetPress}>
           <ResetIcon color={tokens.color.white} width="30" height="30" />
@@ -154,6 +166,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
           <AddIcon color={tokens.color.white} width="30" height="30" />
         </Pressable>
       </View>
+
     </View>
   );
 };
@@ -167,7 +180,7 @@ const styles = StyleSheet.create({
   },
   video: {
     aspectRatio: 1,
-    marginHorizontal: -15,
+    marginHorizontal: -tokens.space.small,
     borderRadius: tokens.radius.large,
     overflow: 'hidden',
     backgroundColor: tokens.color.darkGrey,
@@ -186,12 +199,12 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     marginTop: tokens.space.medium,
-    paddingTop: 15,
+    paddingTop: tokens.space.small,
   },
   indicator: {
     position: 'absolute',
     top: 0,
-    marginLeft: -6,
+    marginLeft: -tokens.space.tiny,
   },
   progressChunk: {
     height: 2,
@@ -206,11 +219,19 @@ const styles = StyleSheet.create({
   progressChunkActive: {
     backgroundColor: tokens.color.yellow,
   },
+  thumbsRailContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginHorizontal: -tokens.space.small,
+    marginTop: tokens.space.small,
+  },
+  thumbsRail: {},
   controls: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center',
+    alignContent: 'center',
     marginTop: tokens.space.large
   }
 });

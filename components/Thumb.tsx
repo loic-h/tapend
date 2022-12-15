@@ -6,18 +6,31 @@ type Props = {
   imageOpacity?: number,
   style?: ViewStyle | ViewStyle[],
   borderRadius?: number,
+  size?: number,
+  active?: boolean,
 };
 
-export default ({ uri, imageOpacity = 1, style: propStyle = {}, borderRadius = 4 }: React.PropsWithChildren<Props>) => {
+export default ({
+  uri,
+  imageOpacity = 1,
+  size = 60,
+  borderRadius = 4,
+  active = false,
+  style: propStyle = {},
+}: React.PropsWithChildren<Props>) => {
   return (
     <View style={{
       ...styles.container,
-      ...propStyle
+      width: size,
+      height: size,
+      borderRadius,
+      ...propStyle,
     }}>
       <Image style={{
         ...styles.image,
         opacity: imageOpacity,
-        borderRadius
+        borderRadius,
+        ...(active ? styles.active : {}),
       }} source={{ uri }} />
     </View>
   );
@@ -27,10 +40,15 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
-    backgroundColor: tokens.color.black,
+    backgroundColor: tokens.color.darkGrey,
+  },
+  active: {
+    borderWidth: 2,
+    borderColor: tokens.color.yellow,
   },
   image: {
     width: '100%',
     height: '100%',
-  }
+    backgroundColor: tokens.color.darkGrey,
+  },
 });

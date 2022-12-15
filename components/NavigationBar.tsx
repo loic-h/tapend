@@ -1,5 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
+import tokens from '../tokens/index.json';
 
 type Props =  {};
 
@@ -16,7 +17,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    paddingTop: 6,
-    paddingBottom: 21,
+    paddingTop: tokens.space.tiny,
+    paddingBottom: tokens.space.small,
   }
 });

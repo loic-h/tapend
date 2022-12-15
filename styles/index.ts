@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { color, font } from '../tokens/index.json';
+import { color, font, space } from '../tokens/index.json';
 
 export default {
   font: StyleSheet.create({
@@ -24,7 +24,7 @@ export default {
       flexGrow: 1,
       backgroundColor: color.black,
       display: 'flex',
-      padding: 15,
+      padding: space.small,
     },
   }),
 };

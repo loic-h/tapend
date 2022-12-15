@@ -105,8 +105,6 @@ const styles = StyleSheet.create({
   },
   thumb: {
     display: 'flex',
-    width: 60,
-    height: 60,
     backgroundColor: tokens.color.black,
     position: 'absolute',
   },
