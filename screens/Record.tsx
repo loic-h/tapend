@@ -37,6 +37,7 @@ export default ({ navigation, route }: NativeStackScreenProps<RootStackParamList
     : [] ;
 
   const goToTape = () => {
+    console.log('goToTape', tape?.id)
     navigation.navigate('Tape', { tapeId: tape?.id });
   };
 
@@ -52,7 +53,12 @@ export default ({ navigation, route }: NativeStackScreenProps<RootStackParamList
         <View style={styles.thumbsWrapper}>
           <Pressable
             style={styles.thumbsContainer}
-            onPress={goToTape}>
+            onPress={(e) => {
+              console.log('press')
+              e.stopPropagation();
+              goToTape()
+            }}>
+              <View style={{ pointerEvents: 'none' }}>
             {thumbs.map((uri: string, index: number) => {
               return (
                 <Thumb
@@ -63,9 +69,11 @@ export default ({ navigation, route }: NativeStackScreenProps<RootStackParamList
                     zIndex: (thumbsLength) - index
                   }}
                   uri={uri}
-                  imageOpacity={1 * (1 - (2 * index) / ( 2 + (2 * index)))} />
+                  imageOpacity={1 * (1 - (2 * index) / ( 2 + (2 * index)))}
+                />
               )})
             }
+            </View>
           </Pressable>
         </View>
         <RecordButton on={() => setRecord(true)} off={() => setRecord(false)} />
@@ -102,11 +110,13 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     position: 'relative',
+    pointerEvents: 'none',
   },
   thumb: {
     display: 'flex',
     backgroundColor: tokens.color.black,
     position: 'absolute',
+    pointerEvents: 'none',
   },
   controlRight: {
     flexGrow: 1,

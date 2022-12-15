@@ -8,6 +8,7 @@ type Props = {
   borderRadius?: number,
   size?: number,
   active?: boolean,
+  onPress?: () => void
 };
 
 export default ({
@@ -17,6 +18,7 @@ export default ({
   borderRadius = 4,
   active = false,
   style: propStyle = {},
+  onPress,
 }: React.PropsWithChildren<Props>) => {
   return (
     <View style={{

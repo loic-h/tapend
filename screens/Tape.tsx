@@ -57,6 +57,13 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
     }
   };
 
+  const goToRecord = (index: number) => {
+    setCurrentRecordIndex(index);
+    setCurrentTime(records.slice(0, index).reduce((acc, record) => {
+      return record.duration + acc;
+    }, 0));
+  };
+
   const onVideoProgress = (data: OnProgressData) => {
     setCurrentTime(records.slice(0, currentRecordIndex).reduce((acc, record) => {
       return record.duration + acc;
@@ -70,10 +77,7 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
       setCurrentTime(totalTime);
       return;
     }
-    setCurrentRecordIndex(currentRecordIndex + 1);
-    setCurrentTime(records.slice(0, currentRecordIndex + 1).reduce((acc, record) => {
-      return record.duration + acc;
-    }, 0));
+    goToRecord(currentRecordIndex + 1)
   };
 
   const seek = (time: number) => {
@@ -147,7 +151,11 @@ export default ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Tape
 
       <View style={styles.thumbsRailContainer}>
         {records.length > 0 && (
-          <ThumbsRail style={styles.thumbsRail} items={records} activeIndex={currentRecordIndex} />
+          <ThumbsRail
+            style={styles.thumbsRail}
+            items={records}
+            activeIndex={currentRecordIndex}
+            onActiveChange={goToRecord} />
         )}
       </View>
 

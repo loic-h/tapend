@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, FlatList, ViewStyle, Dimensions } from 'react-native';
+import { StyleSheet, View, FlatList, ViewStyle, Pressable } from 'react-native';
 import Thumb from '../components/Thumb';
 import tokens from '../tokens/index.json';
 
@@ -7,16 +7,28 @@ type Props = {
   items: { thumbUri: string }[];
   activeIndex: number;
   style?: ViewStyle | ViewStyle[];
+  onActiveChange?: (index: number) => void;
 }
 
-export default ({ items, activeIndex, style = {} }: Props) => {
+export default ({ items, activeIndex, style = {}, onActiveChange }: Props) => {
   const listRef = useRef<FlatList>(null);
   const [layoutWidth, setLayoutWidth] = useState(0);
   const thumbSize = 60;
 
   useEffect(() => {
-    listRef.current?.scrollToIndex({ animated: true, index: activeIndex, viewPosition: 0.5 })
+    scrollTo(activeIndex);
   }, [activeIndex]);
+
+  const onThumbPress = (index: number) => {
+    scrollTo(index);
+    if (onActiveChange) {
+      onActiveChange(index);
+    }
+  };
+
+  const scrollTo = (index: number) => {
+    listRef.current?.scrollToIndex({ animated: true, index, viewPosition: 0.5 });
+  };
 
   return (
     <View style={styles.container}>
@@ -29,15 +41,17 @@ export default ({ items, activeIndex, style = {} }: Props) => {
         }}
         data={items}
         renderItem={({ item, index }) => (
-          <Thumb
-            key={index}
-            style={{
-              ...styles.thumb,
-              ...(index === 0 ? styles.thumbFirst : {}),
-            }}
-            size={thumbSize}
-            uri={item.thumbUri}
-            active={index === activeIndex} />
+          <Pressable onPress={() => onThumbPress(index)}>
+            <Thumb
+              key={index}
+              style={{
+                ...styles.thumb,
+                ...(index === 0 ? styles.thumbFirst : {}),
+              }}
+              size={thumbSize}
+              uri={item.thumbUri}
+              active={index === activeIndex} />
+          </Pressable>
         )}
         snapToAlignment={'center'}
         initialScrollIndex={activeIndex}
